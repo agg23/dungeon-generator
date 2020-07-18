@@ -33,12 +33,12 @@ export const generateMap = (
   });
 
   const roomCount = getRandomInt(minRooms, maxRooms);
-  let totalRoomCount = 0;
+  let totalRoomCount = 1;
   let iterationCount = 0;
 
   while (totalRoomCount < roomCount) {
-    if (iterationCount > 100) {
-      console.warn("Over 100 iterations, stopping");
+    if (iterationCount > maxSize * maxSize) {
+      console.warn(`Over ${maxSize * maxSize} iterations, stopping`);
       break;
     }
 

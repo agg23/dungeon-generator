@@ -54,24 +54,16 @@ export const Map: React.FC<MapProps> = ({ map }) => {
           <rect
             key={i}
             {...room}
-            fill={colors[i]}
+            fill={colors[i % colors.length]}
             onMouseEnter={() => setSelectedRoom(room)}
             onMouseLeave={() => setSelectedRoom(undefined)}
           />
         )) ?? null}
       </svg>
+      {map && <div>{`${map.rooms.length} rooms generated`}</div>}
       {selectedRoom && <div>{JSON.stringify(selectedRoom)}</div>}
     </div>
   );
 };
 
-const baseColors = [
-  "red",
-  "blue",
-  "green",
-  "purple",
-  "pink",
-  "yellow",
-  "orange",
-];
-const colors = [...baseColors, ...baseColors, ...baseColors, ...baseColors];
+const colors = ["red", "blue", "green", "purple", "pink", "yellow", "orange"];
