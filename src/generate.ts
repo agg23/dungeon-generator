@@ -95,12 +95,7 @@ const generateXRoom = (
   const baseDoorPosition = getRandomInt(1, baseWidth - 1);
 
   const doorX = baseX + baseDoorPosition;
-  const doorY = side === "top" ? baseY + 1 + baseHeight : baseY - 1 - height;
-
-  // if (checkForRoomAt(doorX, doorY, existingRooms)) {
-  //   // Room exists here, abort
-  //   return undefined;
-  // }
+  const doorY = side === "top" ? baseY + baseHeight : baseY - height;
 
   // Choose the alignment of the new room
   const doorPosition = getRandomInt(1, width - 1);
@@ -118,18 +113,6 @@ const generateXRoom = (
   return newRoom;
 };
 
-const checkForRoomAt = (x: number, y: number, existingRooms: Room[]): boolean =>
-  !existingRooms.reduce<boolean>(
-    (prev, room) => prev && !doesRoomContain(x, y, room),
-    true
-  );
-
-const doesRoomContain = (x: number, y: number, room: Room): boolean =>
-  room.x <= x &&
-  room.x + room.width >= x &&
-  room.y <= y &&
-  room.y + room.height >= y;
-
 const canPlaceRoom = (room: Room, existingRooms: Room[]): boolean =>
   existingRooms.reduce<boolean>(
     (prev, existingRoom) => prev && !doRoomsIntersect(room, existingRoom),
@@ -137,13 +120,10 @@ const canPlaceRoom = (room: Room, existingRooms: Room[]): boolean =>
   );
 
 const doRoomsIntersect = (a: Room, b: Room): boolean =>
-  doesAxisIntersect(a, b, "x") && doesAxisIntersect(a, b, "y");
-
-const doesAxisIntersect = (a: Room, b: Room, axis: "x" | "y"): boolean =>
-  a.x <= b.x + b.width &&
-  b.x <= a.x + a.width &&
-  a.y <= b.y + b.height &&
-  b.y <= a.y + b.height;
+  a.x < b.x + b.width &&
+  b.x < a.x + a.width &&
+  a.y < b.y + b.height &&
+  b.y < a.y + b.height;
 
 // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 const getRandomInt = (min: number, max: number) => {

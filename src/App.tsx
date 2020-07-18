@@ -9,7 +9,7 @@ export const App: React.FC = () => {
   return (
     <div>
       <Map map={map} />
-      <button onClick={() => setMap(generateMap(3, 8, 100))}>Generate</button>
+      <button onClick={() => setMap(generateMap(3, 8, 50))}>Generate</button>
     </div>
   );
 };
