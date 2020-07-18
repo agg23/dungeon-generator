@@ -65,4 +65,13 @@ export const Map: React.FC<MapProps> = ({ map }) => {
   );
 };
 
-const colors = ["red", "blue", "green", "purple", "pink", "yellow", "orange"];
+const baseColors = [
+  "red",
+  "blue",
+  "green",
+  "purple",
+  "pink",
+  "yellow",
+  "orange",
+];
+const colors = [...baseColors, ...baseColors, ...baseColors, ...baseColors];
