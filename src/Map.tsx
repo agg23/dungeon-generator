@@ -51,13 +51,24 @@ export const Map: React.FC<MapProps> = ({ map }) => {
 
         {/* Key doesn't matter */}
         {map?.rooms.map((room, i) => (
-          <rect
-            key={i}
-            {...room}
-            fill={colors[i % colors.length]}
-            onMouseEnter={() => setSelectedRoom(room)}
-            onMouseLeave={() => setSelectedRoom(undefined)}
-          />
+          <>
+            <rect
+              key={i}
+              {...room}
+              fill={colors[i % colors.length]}
+              onMouseEnter={() => setSelectedRoom(room)}
+              onMouseLeave={() => setSelectedRoom(undefined)}
+            />
+            {room.doors.map((door, j) => (
+              <rect
+                key={`door-${i}-${j}`}
+                {...door}
+                width={1}
+                height={1}
+                fill="black"
+              />
+            ))}
+          </>
         )) ?? null}
       </svg>
       {map && <div>{`${map.rooms.length} rooms generated`}</div>}

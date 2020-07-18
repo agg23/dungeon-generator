@@ -1,4 +1,4 @@
-import { DungeonMap, Room, RoomConfig } from "./types";
+import { DungeonMap, Room, RoomConfig, Door } from "./types";
 
 const baseRoomConfig: RoomConfig = {
   minWidth: 3,
@@ -30,6 +30,7 @@ export const generateMap = (
     y: Math.floor((maxSize - initialHeight) / 2),
     width: initialWidth,
     height: initialHeight,
+    doors: [],
   });
 
   const roomCount = getRandomInt(minRooms, maxRooms);
@@ -101,7 +102,7 @@ const generateXRoom = (
   const baseDoorPosition = getRandomInt(1, baseWidth - 1);
 
   const doorX = baseX + baseDoorPosition;
-  const doorY = side === "top" ? baseY + baseHeight : baseY - height;
+  const doorY = side === "top" ? baseY : baseY + baseHeight;
 
   // Choose the alignment of the new room
   const doorPosition = getRandomInt(1, width - 1);
@@ -109,7 +110,18 @@ const generateXRoom = (
   const x = doorX - doorPosition;
   const y = doorY;
 
-  const newRoom: Room = { x, y, width, height };
+  const door: Door = {
+    x: doorX,
+    y: doorY,
+  };
+
+  const newRoom: Room = {
+    x,
+    y,
+    width,
+    height,
+    doors: [door],
+  };
 
   if (
     !isRoomWithinBounds(newRoom, maxSize) ||
@@ -118,6 +130,9 @@ const generateXRoom = (
     // Room exists, abort
     return undefined;
   }
+
+  // Mutate base room to add door
+  baseRoom.doors.push(door);
 
   return newRoom;
 };
@@ -139,7 +154,7 @@ const generateYRoom = (
   // Both sides are shrunk by 1 to prevent doors on edges
   const baseDoorPosition = getRandomInt(1, baseHeight - 1);
 
-  const doorX = side === "left" ? baseX + baseWidth : baseX - width;
+  const doorX = side === "left" ? baseX : baseX + baseWidth;
   const doorY = baseY + baseDoorPosition;
 
   // Choose the alignment of the new room
@@ -148,7 +163,18 @@ const generateYRoom = (
   const x = doorX;
   const y = doorY - doorPosition;
 
-  const newRoom: Room = { x, y, width, height };
+  const door: Door = {
+    x: doorX,
+    y: doorY,
+  };
+
+  const newRoom: Room = {
+    x,
+    y,
+    width,
+    height,
+    doors: [door],
+  };
 
   if (
     !isRoomWithinBounds(newRoom, maxSize) ||
@@ -157,6 +183,9 @@ const generateYRoom = (
     // Room exists, abort
     return undefined;
   }
+
+  // Mutate base room to add door
+  baseRoom.doors.push(door);
 
   return newRoom;
 };
