@@ -1,0 +1,171 @@
+import random
+
+const byte MIN_ROOMS = 4
+const byte MAX_ROOMS = 5
+const byte MAX_SIZE = 100
+const word MAX_SIZE_2 = MAX_SIZE * MAX_SIZE * 2
+const byte MIN_ROOM_SIZE = 3
+const byte MAX_ROOM_SIZE = 10
+
+array(byte) rooms_x [MAX_ROOMS]
+array(byte) rooms_y [MAX_ROOMS]
+array(byte) rooms_width [MAX_ROOMS]
+array(byte) rooms_height [MAX_ROOMS]
+byte total_rooms
+byte current_rooms
+
+void init_map_generator() {
+  init_rand_seed()
+}
+
+void generate_map() {
+  byte initial_width
+  byte initial_height
+
+  random_int_const(MIN_ROOM_SIZE, MAX_ROOM_SIZE, initial_width)
+  random_int_const(MIN_ROOM_SIZE, MAX_ROOM_SIZE, initial_height)
+
+  rooms_x[0] = (MAX_SIZE - initial_width) >> 1
+  rooms_y[0] = (MAX_SIZE - initial_height) >> 1
+  rooms_width[0] = initial_width
+  rooms_height[0] = initial_height
+
+  random_int_const(MIN_ROOMS, MAX_ROOMS, total_rooms)
+
+  word iteration_count
+  current_rooms = 1
+  iteration_count = 0
+
+  while (current_rooms < total_rooms) {
+    if (iteration_count > MAX_SIZE_2) {
+      asm {
+        kil
+      }
+    }
+
+   generate_room()
+
+   iteration_count += 1
+  }
+}
+
+inline void generate_room() {
+  byte side
+  random_int_const(0, 3, side)
+
+  byte baseRoomIndex
+  random_int_const_min(0, current_rooms, baseRoomIndex)
+
+  if (side >> 1 == 0) {
+    generate_x_room(side | 1 == 0, baseRoomIndex)
+  } else {
+    generate_y_room(side | 1 == 0, baseRoomIndex)
+  }
+}
+
+// High if towards larger side
+inline void generate_x_room(bool high, byte baseRoomIndex) {
+  byte base_x
+  byte base_y
+  byte base_width
+  byte base_height
+
+  base_x = rooms_x[baseRoomIndex]
+  base_y = rooms_y[baseRoomIndex]
+  base_width = rooms_width[baseRoomIndex]
+  base_height = rooms_height[baseRoomIndex]
+
+  byte width
+  byte height
+  random_int_const(MIN_ROOM_SIZE, MAX_ROOM_SIZE, width)
+  random_int_const(MIN_ROOM_SIZE, MAX_ROOM_SIZE, height)
+
+  byte base_door_position
+  byte temp
+  temp = base_width - 1
+  random_int_const_min(1, temp, base_door_position)
+
+  byte door_x
+  byte door_y
+  door_x = base_x + base_door_position
+  
+  if (high) {
+    door_y = base_y + base_height
+  } else {
+    door_y = base_y
+  }
+
+  byte door_position
+  temp = width - 1
+  random_int_const_min(1, temp, door_position)
+
+  byte x
+  byte y
+  x = door_x - door_position
+  y = door_y
+
+  bool output
+  is_room_within_bounds(x, y, width, height, output)
+
+  if (not(output)) {
+    return
+  }
+
+  output = can_place_room(x, y, width, height)
+
+  if (not(output)) {
+    return
+  }
+
+  rooms_x[current_rooms] = x
+  rooms_y[current_rooms] = y
+  rooms_width[current_rooms] = width
+  rooms_height[current_rooms] = height
+
+  current_rooms += 1
+}
+
+// High if towards larger side
+inline void generate_y_room(bool high, byte baseRoomIndex) {
+
+}
+
+inline bool can_place_room(byte x, byte y, byte width, byte height) {
+  byte i
+  bool output
+  while i < current_rooms {
+    output = x < rooms_x[i] + rooms_width[i]
+    output = output && rooms_x[i] < x + width
+    output = output && y < rooms_y[i] + rooms_height[i]
+    output = output && rooms_y[i] < y + height
+
+    if (output) {
+      // Collision
+      return false
+    }
+
+    i += 1
+  }
+
+  return true
+}
+
+macro void is_room_within_bounds(byte x, byte y, byte width, byte height, bool output) {
+  output = x < MAX_SIZE && y < MAX_SIZE && x + width < MAX_SIZE && y + height < MAX_SIZE
+}
+
+macro void random_int_const(byte const min, byte const max, byte output) {
+  byte temp
+  temp = max - min
+  output = rand()
+  output = output %% temp
+  output += min
+}
+
+macro void random_int_const_min(byte const min, byte max, byte output) {
+  byte temp
+  temp = max - min
+  output = rand()
+  output = output %% temp
+  output += min
+}

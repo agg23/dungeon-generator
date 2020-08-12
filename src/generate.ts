@@ -4,7 +4,7 @@ const baseRoomConfig: RoomConfig = {
   minWidth: 3,
   maxWidth: 10,
   minHeight: 3,
-  maxHeight: 3,
+  maxHeight: 10,
 };
 
 export const generateMap = (
@@ -21,7 +21,7 @@ export const generateMap = (
   );
   const initialHeight = getRandomInt(
     baseRoomConfig.minHeight,
-    baseRoomConfig.maxWidth
+    baseRoomConfig.maxHeight
   );
 
   // Center in overall map
@@ -95,7 +95,7 @@ const generateXRoom = (
   const width = getRandomInt(baseRoomConfig.minWidth, baseRoomConfig.maxWidth);
   const height = getRandomInt(
     baseRoomConfig.minHeight,
-    baseRoomConfig.maxWidth
+    baseRoomConfig.maxHeight
   );
 
   // Both sides are shrunk by 1 to prevent doors on edges

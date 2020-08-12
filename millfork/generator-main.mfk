@@ -1,0 +1,35 @@
+import generator
+
+byte in_nmi = 0
+
+byte nmi_fail = 0
+
+byte generate_complete = 0
+
+void main() {
+    init_map_generator()
+
+    generate_map()
+
+    generate_complete = 1
+
+    while(true) {}
+}
+
+void nmi() {
+    if in_nmi != 0 || generate_complete != 0 {
+        // Overran NMI
+        nmi_fail = 1
+        asm {
+            kil
+        }
+    }
+
+    in_nmi = 1
+
+    in_nmi = 0
+}
+
+void irq() {
+
+}

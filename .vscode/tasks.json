@@ -1,0 +1,17 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Generator",
+      "type": "shell",
+      "command": "java -jar ../millfork/target/scala-2.12/millfork.jar ./millfork/generator-main.mfk -o build/generator.nes -g -s -fsource-in-asm -t nes_small -fillegals -O4",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
