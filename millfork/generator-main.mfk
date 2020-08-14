@@ -1,3 +1,4 @@
+import nes_joy
 import graphics
 
 import generator
@@ -8,21 +9,32 @@ byte nmi_fail = 0
 
 byte generate_complete = 0
 
+byte timer = 0
+
 void main() {
     init_graphics()
     init_map_generator()
+
+    generate_and_draw()
+
+    while(true) {}
+}
+
+void generate_and_draw() {
+    generate_complete = 0
+
+    ppu_ctrl = 0
+    ppu_mask = 0
 
     generate_map()
 
     draw_rooms()
 
-    //generate_complete = 1
-
-    while(true) {}
+    generate_complete = 1
 }
 
 void nmi() {
-    if in_nmi != 0 || generate_complete != 0 {
+    if in_nmi != 0 {
         // Overran NMI
         nmi_fail = 1
         asm {
@@ -31,6 +43,20 @@ void nmi() {
     }
 
     in_nmi = 1
+
+    if (generate_complete == 1 && timer == 0) {
+        read_joy1()
+
+        if (input_start > 0) {
+            generate_and_draw()
+
+            timer = 5
+        }
+    }
+
+    if (timer > 0) {
+        timer -= 1
+    }
 
     in_nmi = 0
 }
