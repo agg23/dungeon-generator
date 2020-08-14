@@ -1,0 +1,33 @@
+import random
+
+array(byte) data [100]
+
+void main() {
+    byte i
+    byte temp
+
+    init_rand_seed()
+
+    for i,0,until,100 {
+      random_int_const(1, 10, temp)
+      data[i] = temp
+    }
+
+    while(true) {}
+}
+
+void nmi() {
+
+}
+
+void irq() {
+
+}
+
+macro void random_int_const(byte const min, byte const max, byte output) {
+  byte random_int_const_temp
+  random_int_const_temp = max - min
+  output = rand()
+  output = output %% random_int_const_temp
+  output += min
+}

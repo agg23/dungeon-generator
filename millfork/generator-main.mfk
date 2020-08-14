@@ -1,3 +1,5 @@
+import graphics
+
 import generator
 
 byte in_nmi = 0
@@ -7,11 +9,14 @@ byte nmi_fail = 0
 byte generate_complete = 0
 
 void main() {
+    init_graphics()
     init_map_generator()
 
     generate_map()
 
-    generate_complete = 1
+    draw_rooms()
+
+    //generate_complete = 1
 
     while(true) {}
 }

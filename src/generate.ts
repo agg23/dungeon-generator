@@ -102,7 +102,7 @@ const generateXRoom = (
   const baseDoorPosition = getRandomInt(1, baseWidth - 1);
 
   const doorX = baseX + baseDoorPosition;
-  const doorY = side === "top" ? baseY : baseY + baseHeight;
+  const doorY = side === "top" ? baseY - height : baseY + baseHeight;
 
   // Choose the alignment of the new room
   const doorPosition = getRandomInt(1, width - 1);
@@ -154,7 +154,7 @@ const generateYRoom = (
   // Both sides are shrunk by 1 to prevent doors on edges
   const baseDoorPosition = getRandomInt(1, baseHeight - 1);
 
-  const doorX = side === "left" ? baseX : baseX + baseWidth;
+  const doorX = side === "left" ? baseX - width : baseX + baseWidth;
   const doorY = baseY + baseDoorPosition;
 
   // Choose the alignment of the new room

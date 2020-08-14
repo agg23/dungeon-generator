@@ -1,0 +1,148 @@
+import nes_graphics
+
+import generator
+
+enum ColorEffect {
+    red,
+    blue,
+    green,
+    grey,
+    red_blue,
+    clear
+}
+
+word framecounter   // counts the amount of frames that have passed
+
+Sprite player_sprite @$200
+byte oam_index = 0
+
+const byte default_mask = %00011110 // enable sprites, enable background, no clipping on left side
+
+inline void init_graphics() {
+    byte i
+    //for now, turn off the screen and nmi
+    ppu_ctrl = 0
+    ppu_mask = 0
+
+    init_sprites()
+    load_palletes()
+
+    read_ppu_status() // read PPU status to reset the high/low latch
+    ppu_set_addr(ppu_nametable0) // point the PPU to the message's start
+    for i,0,until,0 {
+        ppu_write_data(3)
+    }
+
+    framecounter = 0
+    ppu_set_scroll(0,0)
+}
+
+inline void init_sprites() {
+    byte i
+    for i,0,to,255 {
+        if (i & %00000011) == 0 {
+            //each sprite takes up 4 bytes, and we want to edit
+            //the y position of each sprite (0th byte)
+            //so we use the %00000011 mask to write every 4th byte (every 0th sprite byte)
+            
+            oam_buffer[i] = $ef // move the sprite off screen
+        }
+        else {
+            oam_buffer[i] = 0
+        }
+    }
+}
+
+macro void load_palletes() {
+    byte i
+    read_ppu_status() // read PPU status to reset the high/low latch
+    ppu_set_addr(ppu_pallete_ram) // point the PPU to palette ram
+    for i,0,until,$20 {
+        ppu_write_data(pallete[i])
+    }
+}
+
+inline void sprite_render() {
+    //Push sprite information to the PPU through DMA transfer
+    ppu_oam_dma_write(oam_buffer.addr.hi)
+}
+
+inline void set_color_effect(ColorEffect effect) {
+    if (effect == red) {
+        ppu_mask = default_mask | %00100000
+    } else if (effect == green) {
+        ppu_mask = default_mask | %01000000
+    } else if (effect == blue) {
+        ppu_mask = default_mask | %10000000
+    } else if (effect == grey) {
+        ppu_mask = default_mask | %00000001
+    } else if (effect == red_blue) {
+        ppu_mask = default_mask | %10100000
+    } else {
+        ppu_mask = default_mask
+    }
+}
+
+inline void draw_rooms() {
+    byte i
+
+    byte x
+    byte y
+    byte width
+    byte height
+    bool x_odd
+    bool y_odd
+
+    word position
+    byte temp
+
+    byte x_i
+    byte y_i
+
+    for i,0,until,total_rooms {
+      x = rooms_x[i]
+      x_odd = x | 1 == 1
+
+      y = rooms_y[i]
+      y_odd = y | 1 == 1
+
+      width = rooms_width[i]
+      height = rooms_height[i]
+
+      position = $0020 * y + x
+
+      for y_i,0,until,height {
+        read_ppu_status() // read PPU status to reset the high/low latch
+        ppu_set_addr(ppu_nametable0 + position)
+
+        for x_i,0,until,width {
+          // Write square
+          temp = i %% 3
+          ppu_write_data(1 + temp)
+        }
+
+        position += $20
+      }
+    }
+
+    ppu_set_scroll(0, 0)
+        ppu_wait_vblank() //wait for next vblank before re-enabling NMI
+                      //so that we don't get messed up scroll registers
+    //re-enable the screen and nmi
+    ppu_ctrl = %10000000   // enable NMI, sprites from Pattern Table 0, background from Pattern Table 1
+    ppu_mask = %00011110
+
+}
+
+//  *LEVEL GRAPHICS*
+
+//palletes for entire game (both title and play screens)
+const array pallete = [
+  $22,$29,$1A,$0F,  $22,$36,$17,$0F,  $22,$30,$21,$0F,  $22,$27,$17,$0F, //background palette
+  $22,$1C,$15,$14,  $22,$02,$38,$3C,  $22,$1C,$15,$14,  $22,$02,$38,$3C //sprite palette
+]
+
+const array title_msg = "Hello Millfork" ascii
+
+//  *CHARACTER ROM (GRAPHICS)*
+segment(chrrom) const array graphics @ $0000 = file("tiles.chr")

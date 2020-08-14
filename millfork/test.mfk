@@ -1,0 +1,105 @@
+    byte start_cell
+    byte end_cell
+
+    byte left_cell
+    byte right_cell
+    byte top_cell
+    byte bottom_cell
+
+    if (x_odd) {
+      // Odd, on right side
+      if (y_odd) {
+        // Odd, on top
+        start_cell = $4 + 5
+        top_cell = 1
+      } else {
+        // Even, on bottom
+        start_cell = $4 + 3
+        top_cell = $4 + 7
+      }
+    } else {
+      // Even, on left side
+      if (y_odd) {
+        // Odd, on top
+        // Square
+        start_cell = 1
+        top_cell = 1
+      } else {
+        // Even, on bottom
+        start_cell = $4 + 7
+        top_cell = $4 + 7
+      }
+    }
+
+    if (x_odd) {
+      right_cell = $4 + 5
+    } else {
+      right_cell = 1
+    }
+
+    if (y_odd) {
+      bottom_cell = $4 + 6
+    } else {
+      bottom_cell = 1
+    }
+
+    // Build first row
+    byte position
+    position = $10 * y + x
+
+    ppu_set_addr(ppu_nametable0 + position)
+    ppu_write_data(start_cell)
+
+    byte x_i
+
+    for x_i,0,until,width - 2 {
+      // Fill top cell
+      ppu_write_data(top_cell)
+    }
+
+    bool temp
+    temp = width | 1 == 1
+
+    if (temp) {
+      // Odd width
+      if (x_odd) {
+        // Two odds makes even, fill full square
+        left_cell = 1
+      } else {
+        left_cell = $4 + 4
+      }
+    } else {
+      if (x_odd) {
+        left_cell = $4 + 4
+      } else {
+        start_cell = 1
+      }
+    }
+
+    byte y_i
+
+    for y_i,1,until,height - 2 {
+      position = y + y_i
+      position = $10 * position + x
+      ppu_set_addr(ppu_nametable0 + position)
+
+      // Write first of row
+      ppu_write_data(right_cell)
+
+      for x_i,1,until,width - 2 {
+        // Write square
+        ppu_write_data(1)
+      }
+
+      // Write last of row
+      ppu_write_data(left_cell)
+    }
+
+    position = y + height - 1
+    position = $10 * position + x
+    ppu_set_addr(ppu_nametable0 + position)
+
+    for x_i,0,until,width - 2 {
+      // Fill bottom cell
+      ppu_write_data(bottom_cell)
+    }
