@@ -1,44 +1,31 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# dungeon-generator - A simple room generator example for JS and NES (Millfork)
 
-## Available Scripts
+`dungeon-generator` is a simple algorithm for proceedurally generating dungeon room layouts with the goal of running on limited hardware, such as the NES's 6502. Included is a JS playground to tweak the algorithm in a more accessible manner, and the Millfork code to run the generator + visualizer on original NES hardware.
 
-In the project directory, you can run:
+<p align="center">
+	<img src="assets/react.png" alt="JS Generator"/>
+	<img src="assets/nes.gif" alt="NES (Millfork) Generator"/>
+</p>
 
-### `yarn start`
+[The amazing Millfork language can be found here](https://github.com/KarolS/millfork). I would recommend running the latest version, but this project was last built and working on 0.3.19beta.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Compilation Instructions
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### JS
 
-### `yarn test`
+```
+cd dungeon-generator
+npm i
+npm start
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Millfork
 
-### `yarn build`
+[Download Millfork](https://github.com/KarolS/millfork/releases)
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+cd dungeon-generator
+java -jar [path to millfork.jar] ./millfork/main.mfk -i ./millfork/lib -o build/generator.nes -g -s -fsource-in-asm -t nes_small -fillegals -O4
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Alternatively, you can use the provided VSCode build task

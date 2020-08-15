@@ -155,7 +155,5 @@ const array pallete = [
   $22,$1C,$15,$14,  $22,$02,$38,$3C,  $22,$1C,$15,$14,  $22,$02,$38,$3C //sprite palette
 ]
 
-const array title_msg = "Hello Millfork" ascii
-
 //  *CHARACTER ROM (GRAPHICS)*
 segment(chrrom) const array graphics @ $0000 = file("tiles.chr")
